@@ -131,10 +131,8 @@ def generate(k, temp=273, phi=0., center=(0., 0.), number_of_points=10**5, drift
     
     Returns
     -------
-    xdata : ndarray
-        x-coordinates
-    ydata : ndarray
-        y-coordinates
+    data : ndarray
+        x- and y-coordinates
 
     Examples
     --------

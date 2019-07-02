@@ -2,11 +2,12 @@ import plotting
 import numpy as np
 
 def four_corner_offsets(upper_left, upper_right, lower_left, lower_right):
-    """Reads particle and trap positions of four measurements and returns particle-trap offsets.
+    """
+    Reads particle and trap positions of four measurements and returns particle-trap offsets.
     To ensure good results, the positions should roughly form a rectangle. 
 
     Parameters
-    ----------
+    ==========
     upper_left : str
         name of 1st file to open
     upper_right : str
@@ -17,7 +18,7 @@ def four_corner_offsets(upper_left, upper_right, lower_left, lower_right):
         name of 4th file to open
 
     Returns
-    -------
+    =======
     points : ndarray_like
         n-th row stores x-,y-coordinates of n-th trap and x-,y-offset of n-th particle
     """
@@ -35,6 +36,7 @@ def four_corner_offsets(upper_left, upper_right, lower_left, lower_right):
 
 def four_corner_offsets_calculate(trap_1, trap_2, trap_3, trap_4, pos_1, pos_2, pos_3, pos_4):
     """Calculates particle-trap offsets. To ensure good results, the positions should roughly form a rectangle. 
+
     Parameters
     ----------
     trap_1 : ndarray_like
@@ -53,6 +55,7 @@ def four_corner_offsets_calculate(trap_1, trap_2, trap_3, trap_4, pos_1, pos_2, 
         trajectory of particle for 3rd measurement
     pos_4 : ndarray-like
         trajectory of particle for 4th measurement
+        
     Returns
     -------
     points : array of float
@@ -105,3 +108,9 @@ def four_corner_calibration(trap_pos_x, trap_pos_y, points):
     offset_y = (1.0-CY)*(p3[3]+(p1[3]-p3[3])*(trap_pos_y - p3[1])/(p1[1] - p3[1])) + (CY)*(p4[3]+(p2[3]-p4[3])*(trap_pos_y-p4[1])/(p2[1]-p4[1]))
 
     return offset_x, offset_y
+
+def single_particle_offset(trap,trajectory):
+    
+    n = len(trajectory)
+
+    return (np.mean(trap[:,0]) - np.mean(trajectory[:,0]), np.mean(trap[:,1]) - np.mean(trajectory[:,1]))

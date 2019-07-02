@@ -1,10 +1,11 @@
 """Unit tests for the calibration module"""
-
+import sys
+sys.path.append('../')
 import unittest
 
 import numpy as np
-import tweezer.calibration as cal
-import tweezer.calibration_generate_data as gen
+import calibration as cal
+import calibration_generate_data as gen
 
 class TestCalibration(unittest.TestCase):
     

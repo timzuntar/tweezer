@@ -5,12 +5,88 @@ import math
 import numpy as np
 import scipy.constants as constants
 
-def force_calculation(time, trajectory, trap_position, ks, temp=293):
-    """Provided arrays of points in time and spatial coordinates of both the optical trap
-    and the trapped particle as well as trap stiffnesses,
+def rot_matrix(ks, phi):
+    """
+    Transforms trap coefficients into x,y-coordinates
+
+    Parameters
+    ----------
+    ks : tuple of float
+        trap coefficients along major and minor axis
+    phi : float
+        rotation angle between the two coordinate systems
+
+    Returns
+    -------
+    P : ndarray_like
+        2x2 tensor of coefficients in x,y-coordinates 
+    """
+
+    P = np.empty((2,2))
     
-    the function calculates forces which the trap beam exerts on the particle (radially)
-    and returns forces and their mean values
+    P[0,0] = ks[0]*(math.cos(phi))**2 + ks[1]*(math.sin(phi))**2
+    P[0,1] = math.sin(phi)*math.cos(phi)*(ks[0]-ks[1])
+    P[1,0] = P[0,1]
+    P[1,1] = ks[0]*(math.sin(phi))**2 + ks[1]*(math.cos(phi))**2
+    
+    return P
+
+def rot_matrix_axial(theta=0):
+    """
+    Creates 2D rotation matrix.
+
+    Parameters
+    ----------
+    theta : float
+        angle of rotation
+
+    Returns
+    -------
+    RT : ndarray_like
+        2x2 rotation matrix
+    """
+
+    RT = np.empty((2,2))
+    
+    RT[0,0] = math.cos(theta)
+    RT[0,1] = math.sin(theta)
+    RT[1,0] = -RT[0,1]
+    RT[1,1] = RT[0,0]
+    
+    return RT
+
+def evaluate_force(trajectory_point, trap_pos_point, P, RT):
+    """
+    Evaluates force in a single time point.
+
+    Parameters
+    ----------
+    trajectory_point : array of float
+        x-,y-positions of particle
+    trap_pos_point : array of float
+        x-,y-positions of optical trap
+    P : ndarray_like
+        rotation matrix
+    RT : ndarray_like
+        coefficient tensor
+
+    Returns
+    -------
+    RT : ndarray_like
+        2x2 rotation matrix
+    """
+
+    delta = np.subtract(trajectory_point,trap_pos_point)
+    force_point = np.matmul(np.matmul(RT,P),delta)
+    
+    return force_point*1e6
+
+def calculate(time, trajectory, trap_position, ks, phi=0.):
+    """Updated version, accounts for trap rotation.
+    Provided arrays of points in time and spatial coordinates of both the optical trap
+    and the trapped particle as well as trap stiffnesses, calculates forces which the trap beam exerts on the particle and their mean values.
+    Assumes that trap coefficients are rotated, but trap positions aren't. 
+    This is the case when calibration.calibrate is run, but x,y-data aren't overwritten. Make sure that offset has already been subtracted from trap positions.
 
     Parameters
     ----------
@@ -22,119 +98,114 @@ def force_calculation(time, trajectory, trap_position, ks, temp=293):
         x-coordinates and y-coordinates of trap
     ks : tuple of floats
         trap stiffnesses in x- and y-directions [N/m]
-    temp : float
-        system temperature [K]
-
-    Note
-    ----
+    phi : float
+        Rotation angle of long axis of trap with respect to x-axis [rad]
 
     Returns
     -------
     forces : ndarray_like
-        n-by-2 array of forces on bead in each time point
-    means : array_like
-        mean absolute values of forces (in x-,y-direction)
+        n-by-2 array of forces on bead at each time point
+    means : ndarray_like
+        mean values of forces along each axis
 
     Raises
     ------
     IndexError
-        if sizes of any arrays differ from the others
+        if array sizes do not match
     Warning
         if any trap coefficient is less than 0 (no bound state)
     """
+    
     n = len(time)
     trajectory = np.array(trajectory)
     trap_position = np.array(trap_position)
 
     if ( n!=len(trajectory[:, 0]) or n!=len(trap_position[:, 0])):
         raise IndexError("Array dimensions need to be identical")
-    if (temp < 0):
-        raise ValueError("Verify temperature is converted to Kelvin")
     if (ks[0] < 0 or ks[1] < 0):
         warnings.warn("Value of one or more trap coefficients is negative")
+        
+    P = rot_matrix(ks,phi)
+    RT = rot_matrix_axial()
+    forces = np.empty((n, 2))
 
-    forces = np.zeros((n, 2))
-    forces[:, 0] = ks[0]*(trajectory[:, 0] - trap_position[:, 0])
-    forces[:, 1] = ks[1]*(trajectory[:, 1] - trap_position[:, 1])
-
-    # Adjust to pN since position values are in micrometers
-    means = np.mean(np.fabs(forces), axis=0)*1e6  
-    print("Mean force values in pN:", means)
-
+    for point in range(n):
+        forces[point] = evaluate_force(trajectory[point,:],trap_position[point,:],P,RT)
+        
+    means = np.mean(forces, axis=0)
+    print("Mean force values in pN: ", means)
+    
     return forces, means
 
-def force_calculation_axis(time, trajectory, trap_position, ks_1, ks_2, temp=293):
-    """Calculates forces acting on a pair of trapped particles along the trap-trap axis as a function of their distance,
-    provided arrays of points in time and spatial coordinates of traps, particles, as well as trap stiffnesses.
-
-    Note
-    ----
-    We assume that the trap axes are parallel to grid axes;
-    the force components pointing along the trap-trap axis are then written into the 'forces' array and averaged.
-
+def calculate_axial(time, trajectories, trap_positions, ks_1, ks_2, phi_1=0., phi_2=0.):
+    """Updated version, accounts for trap rotation.
+    Provided arrays of points in time and spatial coordinates of traps, particles, as well as trap stiffnesses,
+    calculates forces acting on a pair of trapped particles parallel and perpendicular to the trap-trap axis as a function of the traps' distance.
 
     Parameters
     ----------
     time : array_like
         array of time values
-    trajectory : ndarray_like
-        x- and y-coordinates of trapped beads
-    trap_position : ndarray_like
-        x- and y-coordinates of traps
+    trajectories : ndarray_like
+        x- and y-coordinates of both trapped particles
+    trap_positions : ndarray_like
+        x- and y-coordinates of both traps
     ks_1 : tuple of floats
-        stiffness of trap #1 in x- and y-directions [N/m]
+        stiffness of trap #1 in rotated coordinates [N/m]
     ks_2 : tuple of floats
-        stiffness of trap #2 in x- and y-directions [N/m]
-    temp : float
-        system temperature [K]
+        stiffness of trap #2 in rotated coordinates [N/m]
+    phi_1 : float
+        Rotation angle of long axis of 1st trap with respect to x-axis [rad]
+    phi_2 : float
+        Rotation angle of long axis of 2nd trap with respect to x-axis [rad]
 
     Returns
     -------
     forces : ndarray_like
-        forces along the trap-trap axis on both particles for each point in time
+        parallel and perpendicular forces on both particles at each point in time
     means : array_like
         means of those forces
-    distance : float
-        distance between traps
-
-    Examples
-    --------
-    TODO
+    distances : ndarray_like
+        distances between traps -not particles- at each time point
     """
 
     n = len(time)
     
-    if ( n!=len(trajectory[:, 0]) or n!=len(trap_position[:, 0])):
+    if ( n!=len(trajectories[:, 0]) or n!=len(trap_positions[:, 0])):
         raise IndexError("Array dimensions need to be identical")
-
-    forces = np.zeros((n,2))
-
+    if (any(k<0 for k in ks_1) or any(k<0 for k in ks_2)):
+        warnings.warn("Value of one or more trap coefficients is negative")
+        
+    P_1 = rot_matrix(ks_1,phi_1)
+    P_2 = rot_matrix(ks_2,phi_2)
+    forces_1 = np.empty((n, 2))
+    forces_2 = np.empty((n, 2))
+    distances = np.empty(n)
+    
     for point in range(n):
-        if (trap_position[point,2] == trap_position[point,0]):
-            if (trap_position[point,3] - trap_position[point,1] > 0):
-                phi = math.pi/2.
-            elif (trap_position[point,3] - trap_position[point,1] < 0):
-                phi = -math.pi/2.
+        if (trap_positions[point,2] == trap_positions[point,0]):
+            if (trap_positions[point,3] - trap_positions[point,1] > 0):
+                theta = math.pi/2.
+            elif (trap_positions[point,3] - trap_positions[point,1] < 0):
+                theta = -math.pi/2.
         else:
-            phi = np.arctan((trap_position[point,3] - trap_position[point,1])/(trap_position[point,2] - trap_position[point,0]))
-            
-        theta_1 = np.arctan((trajectory[point,1]-trap_position[point,1])/(trajectory[point,0]-trap_position[point,0]))
-        theta_2 = np.arctan((trajectory[point,3]-trap_position[point,3])/(trajectory[point,2]-trap_position[point,2]))
-        keff_1 = math.sqrt((ks_1[0]*math.cos(theta_1))**2 + (ks_1[1]*math.sin(theta_1))**2)
-        keff_2 = math.sqrt((ks_2[0]*math.cos(theta_2))**2 + (ks_2[1]*math.sin(theta_2))**2)
-        r_1 = math.sqrt((trajectory[point,0]-trap_position[point,0])**2 + (trajectory[point,1]-trap_position[point,1])**2)
-        r_2 = math.sqrt((trajectory[point,2]-trap_position[point,2])**2 + (trajectory[point,3]-trap_position[point,3])**2)
+            theta = np.arctan((trap_positions[point,3] - trap_positions[point,1])/(trap_positions[point,2] - trap_positions[point,0]))
+        
+        RT = rot_matrix_axial(theta)
+        forces_1[point] = evaluate_force(trajectories[point,0:2],trap_positions[point,0:2],P_1,RT)
+        forces_2[point] = evaluate_force(trajectories[point,2:4],trap_positions[point,2:4],P_2,RT)
+        distances[point] = math.sqrt((trap_positions[point,0]-trap_positions[point,2])**2 + (trap_positions[point,1]-trap_positions[point,3])**2)
+    
+    forces = np.hstack((forces_1,forces_2))
+    means = np.mean(forces, axis=0)
 
-        forces[point,0] = keff_1*r_1*math.cos(theta_1 - phi)
-        forces[point,1] = keff_2*r_2*math.cos(theta_2 - phi - math.pi)
+    mean_distance = np.mean(np.fabs(distances), axis=0)
 
-    means = np.mean(np.fabs(forces), axis=0)*1e6
-    # adjusted to pN since position values are in micrometers
-    distance = math.sqrt((trap_position[0,0]-trap_position[0,2])**2 + (trap_position[0,1]-trap_position[0,3])**2)
+    print("Mean force values in pN: ", means)
+    
+    return forces,means,distances,mean_distance
 
-    return forces, means, distance
-
-def sigma_calculation(trajectory, trap_position):
+def displacement_calculation(trajectory, trap_position):
     """Provided arrays of optical trap positions and particle trajectories, calculates the mean displacements and their uncertainties.
 
     Parameters
@@ -160,17 +231,17 @@ def sigma_calculation(trajectory, trap_position):
 
     displacements = np.zeros((n,m))
     squares = np.zeros((n,m))
-    sigmas = np.zeros(m)
+    variances = np.zeros(m)
 
     for point in range(n):
         for i in range(m):
             displacements[point,i] = trajectory[point,i]-trap_position[point,i]
             squares[point,i] = displacements[point,i]**2
     
-    means = np.mean(np.fabs(displacements), axis=0)
+    means = np.mean(displacements, axis=0)
     means_sq = np.mean(np.fabs(squares), axis=0)
 
     for point in range(m):
-        sigmas[point] = math.sqrt(abs(means_sq[point] - np.square(means[point])))
+        variances[point] = math.sqrt((abs(means_sq[point] - np.square(means[point])))/n)
 
-    return means, sigmas
+    return displacements, means, variances

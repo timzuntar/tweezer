@@ -1,4 +1,4 @@
-""Unit tests for the offset calibration module"""
+"""Unit tests for the offset calibration module"""
 
 import sys
 sys.path.append('../')
