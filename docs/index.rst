@@ -3,16 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Optical tweezer tools's documentation!
-=================================================
+Welcome to documentation pages for the ``Optical tweezer tools`` package!
+=======================================================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    introduction
+   guides/setup_guide
+   guides/usage
+   guides/data_extraction
+   calibration
    force_calculation
-
+   api
 
 
 Indices and tables

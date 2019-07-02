@@ -1,13 +1,6 @@
-
 Force calculation
 =================
 
-Force calculation example
+A more detailed look into the force calculation functionality with example outputs.
 
-.. plot:: examples/forces_example.py
-
-   An example of force calculation.
-
-.. plot:: examples/plotting_example.py
-
-   An example of plotting.
+.. plot:: ../examples/forces_example.py

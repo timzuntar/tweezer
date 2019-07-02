@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../')
+
 import tweezer.calibration as cal
 import tweezer.calibration_generate_data as gen
 import tweezer.plotting as plt

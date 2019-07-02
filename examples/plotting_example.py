@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../')
+
 import os
 import numpy as np
 import tweezer.plotting as plt
@@ -9,7 +12,7 @@ import tweezer.calibration as cal
 # examples folder
 
 # script_dir = os.path.dirname(__file__) # absolute dir the script is in
-file_name = 'test.dat'  # name of the dat file
+file_name = 'data/test.dat'  # name of the dat file
 # path = os.path.join(script_dir, file_name)
 path = file_name
 particles = 1
@@ -31,6 +34,6 @@ for i in range(particles):
     # Calculate forces
     k_estimated, phi_estimated, center_estimated = cal.calibrate(
         time, data, averaging_time)
-    f, m = forcecalc.force_calculation(time, data, trap, k_estimated, 300)
+    f, m = forcecalc.calculate(time, data[:,0:2], trap[:,0:2], k_estimated, 0.)
     # Plot force
     plt.force_plot(time, f)
