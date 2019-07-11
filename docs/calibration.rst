@@ -1,7 +1,9 @@
+.. _ref-calibration:
+
 Calibration
 ===========
 
-A more detailed look into the calibration functionality with example outputs.
+Let us take a more detailed look into the calibration functionality.
 
 Suppose the potential of an optical trap is elliptical in shape with its long (a) and short (b) axes not, in general, aligned with the coordinate axes of the laboratory sistem. Usually the beam is symmetrical enough for this approximation to make sense. The *calibrate* function then computes the angle :math:`\phi` for which its long axis is rotated with respect to the x-axis and the trap coefficients :math:`k_a, k_b` which characterise the optical trapping force in a parabolic potential, namely :math:`F_i = k_i \Delta r_i`. The new coefficients are defined as
 

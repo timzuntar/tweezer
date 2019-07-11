@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to documentation pages for the ``Optical tweezer tools`` package!
-=======================================================================
+=========================================================================
 
 .. toctree::
    :maxdepth: 2

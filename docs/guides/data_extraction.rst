@@ -5,7 +5,7 @@ Data extraction
 
 Let us assume that all the necessary experiments have been carried out and all the relevant raw data recorded. It is most likely in the form of images from a microscope's focal plane, either as single frames, consecutive frames or an obscure video format. While the specified positions and strengths of optical traps can generally be found either in the image/video metadata or imported from another file, the positions of particles are, of course, unknown - hence the recording! They need to be visually identified, tracked and their movement extracted.
 
-Besides data analysis, ``Optical tweezer tools`` is also intended to be used for this identification and extraction. The particle tracking functionality is provided on the base of *trackpy*; we include a graphic interface to give feedback when adjusting parameters and for previewing frames. 
+Besides data analysis, ``Optical tweezer tools`` is also intended to be used for this identification and extraction. The particle tracking functionality is provided on the base of `TrackPy <http://soft-matter.github.io/trackpy/>`_; or with our costum tracker. We include a graphic interface in a `separate repository <https://github.com/zgosar/GUI_for_ParticleTracking>`_ to give feedback when adjusting parameters and for previewing frames. 
 
 First, the images or video frames need to be loaded. For a sequentially labelled series of *n* images (e.g. *0.png*, *1.png*, ...), this is done via
 
@@ -13,6 +13,12 @@ First, the images or video frames need to be loaded. For a sequentially labelled
 
     frames = [np.array(Image.open("your_data_folder\\{:}.png".format(i))) for i in range(len(n))]
 
+Usage of `pims <https://pypi.org/project/PIMS/>`_ is supported for opening of files of many formats.
+
+
+Using TrackPy
+-------------
+    
 Then, any particles present in each frame which fit the given parameters are identified. Through TrackPy, this can be done for individual frames or with a batch function. Let's say we wish to identify particles of around 15 px diameter in the n-th image:
 
 .. code-block:: python
@@ -32,7 +38,11 @@ The next step is linking the positions together to tracks - we wish to know how 
 .. code-block:: python
 
     tracks = tp.link_df(features, max_distance, memory=10)
-    
+
+For more details on how to use TrackPy see the documantation `<http://soft-matter.github.io/trackpy/>`_.
+
+Our Tracker
+-----------
     
 Alternatively, a non-TrackPy approach can identify features in the 1st frame and then similarly locate and track particles in all frames. Here, any pixel brighter (*invert=False*) than the treshold value starts a flood fill around its position. Features with pixel counts between *min_size* and *max_size* are retained, the rest discarded. *max_distance* fulfills the same role as above.
     
@@ -42,9 +52,13 @@ Alternatively, a non-TrackPy approach can identify features in the 1st frame and
     
     positions = simple_tracking(frames, treshold_value, invert=False,min_size,max_size,max_distance)
     
+Other Data
+----------
+
 Besides the positions, every frame also needs the aforementioned metadata, namely the time at which the frame was taken (relative to the 1st one), the laser power, and information about the traps- their powers and positions. If only a single trap is active, this means 5 values per frame, 8 if 2 are active etc. Once the values for all frames are saved to arrays, the data can be written into a file for future reference before further analysis. Use one of the below functions: if simple tracking was used, the correct function would be *save_tracked_data*; otherwise, use *save_tracked_data_pandas*.
 
 .. code-block:: python
+
     save_tracked_data('name_of_output_file.dat', number_of_frames, tracks, times, laser_powers, traps)
     
     save_tracked_data_pandas('name_of_output_file.dat', frames, tracks, times, laser_powers, traps)

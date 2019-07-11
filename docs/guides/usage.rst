@@ -5,41 +5,8 @@ Usage primer
 
 Near the focus of a laser beam, particles with refractive indices greater than the surrounding medium are acted upon by an attractive optical gradient force. Optical tweezers exploit this for trapping, and manipulation, of these particles. The purpose of this package is to provide a means of analysing the movement of trapped particles and, consequently, the forces which traps exert on them.
 
-In this quick-start guide, we will assume that experimental data is *not* available - the extraction of raw data from recordings is covered in the :ref:`ref-data-extraction` guide - but every important step of the process is included. Readers who wish to skip straight to manipulating the data can start with section :ref:`ref-generating-sample`.
+Every important step of the process of data extraction and analysis is included, but only briefly. For more information about the different functionalities, you should consult the respective pages (e.g. :ref:`ref-data-extraction`, :ref:`ref-calibration` etc.). In this quick-start guide, we will assume that experimental data is *not* available. Readers who wish to skip straight to manipulating the data can start with section :ref:`ref-quickstart-calibration`.
 
-
-Data format
------------
-
-When faced with experimental recordings in the form of image sequences or video files, the first course of action is to identify the particles and extract their movement into text files, which can then be further manipulated. This can be done either with TrackPy or another program of your choice. The former can be run through a GUI or directly, which is useful for batch processing.
-
-The tracking packages' final output for each recording is a multi-column .dat file with lines consisting of:
-
-* **[column 1]** time
-* **[column 2]** laser power
-* **[columns 3-5]** x-, y- coordinate of 1st optical trap and relative trap strength
-* same 3 columns repeated for traps 2-4
-* **[columns 15-16]** x-,y- coordinates of 1st particle
-* same 2 columns repeated for any additional particles
-
-.. note::
-    This format only supports up to four optical traps. This was sufficient for our purposes, but in case your measurements require a higher number, you will need to change the read/write functionality.
-    
-    
-.. _ref-read-data:
-
-Reading the data
-----------------
-
-You can unpack a generated text file with the function *read_file*. Let's say the video we were working with contains two particles:
-
-.. code-block:: python
-
-    import tweezer
-    
-    time,traps,trajectories = tweezer.plotting.read_file("example_data.dat",2)
-
-The function returns arrays of times, all the trap data and the two particles' trajectories. We save the output and can then analyse it in several ways.
 
 .. _ref-generating-sample:
 
@@ -57,8 +24,28 @@ The function draws at random from a bivariate distribution and scales the offset
 
 If the flag *Drift* is set to *True*, then the particle positions will be convolved with a random sinusoidal function to approximate the effects of random trap position drift due to outside factors.
 
+
+.. _ref-read-data:
+
+Reading the data
+----------------
+
+You can unpack a generated text file with the function *read_file*. Let's say the video we were working with contains two particles:
+
+.. code-block:: python
+
+    import tweezer
+    
+    time,traps,trajectories = tweezer.plotting.read_file("example_data.dat",2)
+
+The function returns arrays of times, all the trap data and the two particles' trajectories. We save the output and can then analyse it in several ways.
+
+
+.. _ref-quickstart-calibration:
+
 Calibration
 -----------
+
 
 Even when the exact locations and strengths of the tweezer's optical traps are specified, they do not, in practice, correspond exactly to reality. The laser beam may be slightly offset and not precisely circular; the shape of the trap's potential may not be parabolic even at small displacements or its strength coefficients different than previously computed. This package provides some functionality which reduces the worst issues.
 
@@ -122,6 +109,24 @@ If the objective is to calculate forces between a *pair* of particles, you can e
     
 The forces and means returned are calculated in the axial direction (in the direction away from the other particle), so make sure the sign is correct when calculating the forces' sum. Here, we used *force_plot* at the end to produce a graph of forces with respect to time.
 
+
+Data format
+-----------
+
+When faced with experimental recordings in the form of image sequences or video files, the first course of action is to identify the particles and extract their movement into text files, which can then be further manipulated. This can be done either with TrackPy or another program of your choice. The former can be run through a GUI or directly, which is useful for batch processing.
+
+The tracking packages' final output for each recording is a multi-column .dat file with lines consisting of:
+
+* **[column 1]** time
+* **[column 2]** laser power
+* **[columns 3-5]** x-, y- coordinate of 1st optical trap and relative trap strength
+* same 3 columns repeated for traps 2-4
+* **[columns 15-16]** x-,y- coordinates of 1st particle
+* same 2 columns repeated for any additional particles
+
+.. note::
+    This format only supports up to four optical traps. This was sufficient for our purposes, but in case your measurements require a higher number, you will need to change the read/write functionality.
+    
 
 Generating a data sample - moving trap
 --------------------------------------
