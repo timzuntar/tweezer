@@ -1,6 +1,3 @@
-import sys
-sys.path.append('../')
-
 import numpy as np
 import tweezer.force_calc as forcecalc
 import tweezer.data_generation as datagen

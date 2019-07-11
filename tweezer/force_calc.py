@@ -167,6 +167,8 @@ def calculate_axial(time, trajectories, trap_positions, ks_1, ks_2, phi_1=0., ph
         means of those forces
     distances : ndarray_like
         distances between traps -not particles- at each time point
+    mean_distance : float
+        mean of the above values
     """
 
     n = len(time)

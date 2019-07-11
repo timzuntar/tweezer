@@ -36,4 +36,4 @@ for i in range(particles):
         time, data, averaging_time)
     f, m = forcecalc.calculate(time, data[:,0:2], trap[:,0:2], k_estimated, 0.)
     # Plot force
-    plt.force_plot(time, f)
+    plt.force_plot(time, f,m)

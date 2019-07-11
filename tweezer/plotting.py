@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import calibration as cal
+import tweezer.calibration as cal
 
 
 def read_file(path, no_of_particles):
@@ -108,7 +108,7 @@ def displacement_plot(time,displacements,means,sigmas,plot_means=False):
 
     n = len(means)//2
     fig, (ax1, ax2) = plt.subplots(1, 2)
-    plt.suptitle('Displacements of trapped particles')
+    plt.suptitle('Displacements of particles from trap center')
 
     ax1.set_xlabel('Time [s]')
     ax1.set_ylabel('Direction x [$\mu m$]')

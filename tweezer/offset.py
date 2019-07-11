@@ -1,4 +1,4 @@
-import plotting 
+import tweezer.plotting as plotting
 import numpy as np
 
 def four_corner_offsets(upper_left, upper_right, lower_left, lower_right):
@@ -110,7 +110,29 @@ def four_corner_calibration(trap_pos_x, trap_pos_y, points):
     return offset_x, offset_y
 
 def single_particle_offset(trap,trajectory):
-    
-    n = len(trajectory)
+    """
+    For single- or multi-column data, computes mean offsets of trap centers.
 
-    return (np.mean(trap[:,0]) - np.mean(trajectory[:,0]), np.mean(trap[:,1]) - np.mean(trajectory[:,1]))
+    Parameters
+    ==========
+    trap : ndarray_like
+        trap positions for each coordinate or particle
+    trajectory : ndarray_like
+        particle positions for each coordinate
+
+    Returns
+    =======
+    offsets : array_like
+        estimated trap offsets for each coordinate
+    """
+    
+    if (trajectory.shape != trap.shape):
+        raise IndexError("Array dimensions need to be identical")
+
+    num_columns = trajectory.shape[1]
+    offsets = np.empty((num_columns))
+
+    for i in range(num_columns):
+        offsets[i] = np.mean(trap[:,i]) - np.mean(trajectory[:,i])
+
+    return offsets
