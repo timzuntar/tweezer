@@ -15,7 +15,7 @@ and are, together with the rotation angle, the main information about the trap n
 
 Coordinate drift is minimised using averaging over time intervals: by default the length is 1 second, but depending on your frequency of measurement you should take care that each average is computed with a large enough number of data points. 
 
-In the following example we can see what the averaging, drift elimination and potential estimation look like in practice.
+In the following example we can see what the averaging, drift elimination and potential estimation look like in practice - although the plots in this particular example are created on the basis of generated synthetic data, from which trap parameters are computed. First, particle positions are averaged in time; both to better show the movement trend and to subtract it. The effect of this can be seen in the second plot. The final two plots show calculated potential shapes.
     
-.. plot:: ../examples/plotting_example.py
+.. plot:: ../examples/calibration_example.py
 

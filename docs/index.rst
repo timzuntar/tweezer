@@ -16,6 +16,7 @@ Welcome to documentation pages for the ``Optical tweezer tools`` package!
    guides/data_extraction
    calibration
    force_calculation
+   example
    api
 
 

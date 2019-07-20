@@ -39,7 +39,7 @@ We use these parameters to generate a particle trajectory.
     
 .. testcode::
 
-    output_folder = "generated_test_frames"
+    output_folder = "../examples/generated_test_frames"
     if os.path.exists(output_folder):
         rmtree(output_folder)
     os.makedirs(output_folder,exist_ok=True)

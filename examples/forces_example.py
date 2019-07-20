@@ -32,7 +32,7 @@ plt.force_plot_radial(time,f,m,True)
 
 # Example of calculating force of interaction between a pair of beads and their displacement
 # here we include a test file from one of the experiments
-times,traps,trajectories = plt.read_file("data/ES0_5_out.dat",2)
+times,traps,trajectories = plt.read_file("data/example_two_particles.dat",2)
 
 traps_slice = np.hstack((traps[:,0:2],traps[:,3:5]))
 

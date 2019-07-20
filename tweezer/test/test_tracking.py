@@ -2,7 +2,7 @@ import unittest
 import pims
 import trackpy as tp
 from tweezer import TWV_Reader
-from tweezer.tracking import save_tracked_data
+from tweezer.tracking import save_tracked_data_pandas
 
 class TestTracking(unittest.TestCase):
     """
@@ -23,7 +23,7 @@ class TestTracking(unittest.TestCase):
         times, laser_powers, traps = frames.get_all_tweezer_positions()
         features = tp.batch(frames, 25, minmass=1000, invert=False)
         tracks = tp.link_df(features, 15, memory=10)
-        save_tracked_data(filename[:-4] + '_out.dat', frames, tracks, times, laser_powers, traps)
+        save_tracked_data_pandas(filename[:-4] + '_out.dat', frames, tracks, times, laser_powers, traps)
         with open(filename[:-4] + '_out.dat', 'r') as calculated_file:
             with open(filename[:-4] + '_expected.dat', 'r') as expected_file:
                 for calculated, expected in zip(calculated_file, expected_file):

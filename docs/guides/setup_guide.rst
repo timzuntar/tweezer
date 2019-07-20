@@ -22,7 +22,7 @@ Additionally, if you will be using this package to extract particle positions fr
 * pyqtgraph
 * pandas
 
-for full functionality, although it can be run without *pims* if you are using common formats.
+for full functionality, although it can be run without ``pims`` if you are using common formats.
 
 Installation
 ------------
@@ -43,4 +43,4 @@ for which Git is not required, or by first copying the repository,
 Verification
 ------------
 
-Once ``Optical tweezer tools`` is installed, we suggest running the provided unit tests to make sure the code functions as intended on your machine. The file *run_tests.py* in the *tweezer/test* directory tests most functions; if all tests pass without failures or errors, the package has been (most likely) properly installed.
+Once ``Optical tweezer tools`` is installed, we suggest running the provided unit tests to make sure the code functions as intended on your machine. The file ``run_tests.py`` in the *tweezer/test* directory tests most functions; if all tests pass without failures or errors, the package has been (most likely) properly installed.

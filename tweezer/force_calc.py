@@ -137,7 +137,7 @@ def calculate(time, trajectory, trap_position, ks, phi=0.):
     
     return forces, means
 
-def calculate_axial(time, trajectories, trap_positions, ks_1, ks_2, phi_1=0., phi_2=0.):
+def calculate_axial(time, trajectories, trap_positions, ks_1, ks_2, phi_1=0., phi_2=0.,inter_particle = False):
     """Updated version, accounts for trap rotation.
     Provided arrays of points in time and spatial coordinates of traps, particles, as well as trap stiffnesses,
     calculates forces acting on a pair of trapped particles parallel and perpendicular to the trap-trap axis as a function of the traps' distance.
@@ -158,6 +158,8 @@ def calculate_axial(time, trajectories, trap_positions, ks_1, ks_2, phi_1=0., ph
         Rotation angle of long axis of 1st trap with respect to x-axis [rad]
     phi_2 : float
         Rotation angle of long axis of 2nd trap with respect to x-axis [rad]
+    inter_particle : bool
+        Determines whether or not the distance and angle is determined by particles' (True) or traps' (False) positions 
 
     Returns
     -------
@@ -185,18 +187,30 @@ def calculate_axial(time, trajectories, trap_positions, ks_1, ks_2, phi_1=0., ph
     distances = np.empty(n)
     
     for point in range(n):
-        if (trap_positions[point,2] == trap_positions[point,0]):
-            if (trap_positions[point,3] - trap_positions[point,1] > 0):
-                theta = math.pi/2.
-            elif (trap_positions[point,3] - trap_positions[point,1] < 0):
-                theta = -math.pi/2.
-        else:
-            theta = np.arctan((trap_positions[point,3] - trap_positions[point,1])/(trap_positions[point,2] - trap_positions[point,0]))
-        
+
+        if (inter_particle == False):
+            if (trap_positions[point,2] == trap_positions[point,0]):
+                if (trap_positions[point,3] - trap_positions[point,1] > 0):
+                    theta = math.pi/2.
+                elif (trap_positions[point,3] - trap_positions[point,1] < 0):
+                    theta = -math.pi/2.
+            else:
+                theta = np.arctan((trap_positions[point,3] - trap_positions[point,1])/(trap_positions[point,2] - trap_positions[point,0]))
+            distances[point] = math.sqrt((trap_positions[point,0]-trap_positions[point,2])**2 + (trap_positions[point,1]-trap_positions[point,3])**2)
+        elif (inter_particle == True):
+            if (trajectories[point,2] == trajectories[point,0]):
+                if (trajectories[point,3] - trajectories[point,1] > 0):
+                    theta = math.pi/2.
+                elif (trajectories[point,3] - trajectories[point,1] < 0):
+                    theta = -math.pi/2.      
+            else:
+                theta = np.arctan((trajectories[point,3] - trajectories[point,1])/(trajectories[point,2] - trajectories[point,0]))      
+            distances[point] = math.sqrt((trajectories[point,0]-trajectories[point,2])**2 + (trajectories[point,1]-trajectories[point,3])**2)   
+
         RT = rot_matrix_axial(theta)
         forces_1[point] = evaluate_force(trajectories[point,0:2],trap_positions[point,0:2],P_1,RT)
         forces_2[point] = evaluate_force(trajectories[point,2:4],trap_positions[point,2:4],P_2,RT)
-        distances[point] = math.sqrt((trap_positions[point,0]-trap_positions[point,2])**2 + (trap_positions[point,1]-trap_positions[point,3])**2)
+        
     
     forces = np.hstack((forces_1,forces_2))
     means = np.mean(forces, axis=0)

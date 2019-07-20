@@ -70,7 +70,7 @@ Working with the GUI
 
 Parameters like feature diameter and "size" need to be specified for some of the above functions to be run. If they are unknown, trial and error is one possible approach, but estimating them through the GUI can be useful even if all the other work is done through the command line. Once you have loaded the recording, change the values of the Diameter as well as minimum pixel count ("mass") sliders until the program has labelled all particles, but no false positives (spurious features). The minimum mass slider is found on the right-hand side of the preview window and can be adjusted by clicking and dragging the horizontal line. The lowermost horizontal slider controls which image/frame of the sequence is displayed and can be used to make sure that the correct features will keep being identified over the course of the recording.
 
-.. figure:: ../images/placeholder.png
+.. figure:: ../images/GUI.png
     :align: center
     
     Image of the GUI showing a loaded and already tracked sample file.

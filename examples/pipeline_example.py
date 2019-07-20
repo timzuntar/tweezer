@@ -55,7 +55,7 @@ times,traps,trajectory = plotting.read_file(output_folder + "/tracked_data.dat",
 
 #5: Calibration, removing offset etc.
 
-trap_offsets = offset.single_particle_offset(traps,trajectory[:,::-1]) #should be close to 0 since trap isn't shifted
+trap_offsets = offset.single_particle_offset(traps[:,0:2],trajectory[:,::-1]) #should be close to 0 since trap isn't shifted
 coeffs_estimate,rotation_angle,_ = calibration.calibrate(times,trajectory,0.005)
 
 #6: Force analysis
@@ -67,6 +67,5 @@ print("Trap rotation angle", rotation_angle)
 forces,mean_forces = force_calc.calculate(times,trajectory[:,1::-1],traps[:,0:2],coeffs_estimate,rotation_angle)
 
 #7: Create graphs
-
-plotting.force_plot(times,forces,mean_forces)
 plotting.trajectory_plot(times,trajectory[:,1::-1],0.005)
+plotting.force_plot(times,forces,mean_forces)
