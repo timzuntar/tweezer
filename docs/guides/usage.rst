@@ -46,7 +46,6 @@ The function returns arrays of times, all the trap data and the two particles' t
 Calibration
 -----------
 
-
 Even when the exact locations and strengths of the tweezer's optical traps are specified, they do not, in practice, correspond exactly to reality. The laser beam may be slightly offset and not precisely circular; the shape of the trap's potential may not be parabolic even at small displacements or its strength coefficients different than previously computed. This package provides some functionality which reduces the worst issues.
 
 .. note::

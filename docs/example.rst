@@ -137,7 +137,7 @@ We read the file back. The shape of parsed data is printed out; if laser powers 
     Shape of initial data:  (20, 16)
     Shape of cropped data:  (20, 16)
     
-Next, the estimated trap parameters are calculated. You can see that the estimates differ very much from the originally specified values, as 20 points are not enough to compute a meaningful statistic. Trap coefficient estimates are specified in micronewtons per cm, not per m, leading to a 10^-2 scaling factor.
+Next, the estimated trap parameters are calculated. You can see that the estimates differ very much from the originally specified values, as 20 points are not enough to compute a meaningful statistic.
     
 .. testcode::
 

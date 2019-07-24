@@ -65,6 +65,9 @@ Besides the positions, every frame also needs the aforementioned metadata, namel
 
 The data is now saved in a format which can easily be read back into the program (see: :ref:`ref-read-data`).
 
+.. note::
+    The positions of both traps and particles are output in pixels. In the likely case that your experimental setup captures images at a different resolution than :math:`1 \mu m / px`, you will need to multiply the trajectories and trap data with a scaling factor.
+
 Working with the GUI
 --------------------------
 
